@@ -154,52 +154,7 @@ Estructura general:
 
 ---
 
-## 📊 7. Diagrama UML (texto estilo Mermaid)
-
-Diagrama conceptual de clases:
-
-    class User {
-        int Id
-        string Username
-        string PasswordHash
-        List<Note> Notes
-    }
-
-    class Note {
-        int Id
-        string Title
-        string EncryptedContent
-        int UserId
-        User User
-    }
-
-    class AesEncryptionService {
-        Encrypt(text)
-        Decrypt(cipher)
-    }
-
-    class AuthController {
-        Register()
-        Login()
-    }
-
-    class NotesController {
-        Create()
-        GetAll()
-        GetById()
-        Update()
-        Delete()
-    }
-
-Relaciones principales:
-
-- Un `User` tiene muchas `Note`
-- `NotesController` usa `AesEncryptionService`
-- `AuthController` trabaja con `User`
-
----
-
-## 🚀 8. Ejecutar el proyecto localmente
+## 🚀 7. Ejecutar el proyecto localmente
 
 1. Restaurar dependencias:
 
@@ -219,36 +174,36 @@ Relaciones principales:
 
 ---
 
-## 🔥 9. Endpoints principales
+## 🔥 8. Endpoints principales
 
 ### Autenticación
 
-- **POST** `/api/Auth/register`  
+- **POST** `/api/Auth/register`
   Crea un usuario nuevo.
 
-- **POST** `/api/Auth/login`  
+- **POST** `/api/Auth/login`
   Devuelve un JWT que se usará en los demás endpoints protegidos.
 
 ### Notas (requiere JWT en el header)
 
-- **POST** `/api/Notes`  
+- **POST** `/api/Notes`
   Crea una nota encriptada.
 
-- **GET** `/api/Notes`  
+- **GET** `/api/Notes`
   Lista las notas del usuario autenticado.
 
-- **GET** `/api/Notes/{id}`  
+- **GET** `/api/Notes/{id}`
   Devuelve una nota desencriptada por id.
 
-- **PUT** `/api/Notes/{id}`  
+- **PUT** `/api/Notes/{id}`
   Actualiza una nota existente.
 
-- **DELETE** `/api/Notes/{id}`  
+- **DELETE** `/api/Notes/{id}`
   Elimina una nota.
 
 ---
 
-## 🌐 10. Despliegue en Render (resumen)
+## 🌐 9. Despliegue en Render (resumen)
 
 1. Subir el proyecto a GitHub.
 2. En Render: “New Web Service” y conectar el repo.
@@ -267,3 +222,52 @@ Relaciones principales:
 Render levantará la API y podrás usar Swagger en la URL pública de tu servicio.
 
 ---
+
+## 🧩 Diagrama UML
+
+```mermaid
+classDiagram
+    class User {
+        int Id
+        string Username
+        string PasswordHash
+        List~Note~ Notes
+    }
+
+    class Note {
+        int Id
+        string Title
+        string EncryptedContent
+        int UserId
+        User User
+    }
+
+    class AesEncryptionService {
+        +Encrypt(text) string
+        +Decrypt(cipher) string
+    }
+
+    class AuthController {
+        +Register()
+        +Login()
+    }
+
+    class NotesController {
+        +Create()
+        +GetAll()
+        +GetById()
+        +Update()
+        +Delete()
+    }
+
+    User "1" --> "many" Note
+    NotesController --> AesEncryptionService
+    AuthController --> User
+
+Relaciones principales:
+
+- Un `User` tiene muchas `Note`
+- `NotesController` usa `AesEncryptionService`
+- `AuthController` trabaja con `User`
+
+```
