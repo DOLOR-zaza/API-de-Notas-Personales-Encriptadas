@@ -1,235 +1,269 @@
-🚀 API BACKEND1 – Notas Encriptadas + Autenticación JWT
+# 🚀 API BACKEND1 – Notas Encriptadas + Autenticación JWT
 
-Proyecto desarrollado por: Martin Cossio, Bladimir Mejía, Jesús Bibiano, Aaron Téllez
+Proyecto desarrollado por: **Martin Cossio, Bladimir Mejía, Jesús Bibiano, Aaron Téllez**
 
-API REST profesional que permite registrar usuarios, iniciar sesión y crear notas personales encriptadas utilizando:
+API REST que permite registrar usuarios, iniciar sesión y crear notas personales encriptadas, utilizando:
 
-🔐 JWT (JSON Web Tokens)
+- 🔐 JWT (JSON Web Tokens)
+- 🔏 AES-256
+- 🗄️ SQLite + Entity Framework Core
+- 📘 Swagger como documentación interactiva
+- 🧱 Arquitectura limpia (controllers, services, DTOs, models)
 
-🔏 AES-256
+---
 
-🗄️ SQLite + Entity Framework Core
+## ⭐ 1. ¿Qué hace esta API?
 
-📘 Swagger como documentación interactiva
+Esta API permite:
 
-🧱 Arquitectura limpia: controllers, services, DTOs, models
+- Registrar usuarios
+- Iniciar sesión y recibir un token JWT
+- Crear notas (el contenido se encripta antes de guardarse)
+- Obtener notas (la API las desencripta antes de devolverlas)
+- Actualizar y eliminar notas
+- Aislar las notas por usuario (solo ves tus notas)
 
-⭐ 1. ¿Qué hace esta API?
+Es ideal para:
 
-La API permite:
+- Mostrar seguridad backend
+- Demostrar criptografía simétrica (AES)
+- Proyectos escolares / demo profesionales
 
-✔ Registrar usuarios
+---
 
-✔ Iniciar sesión y obtener un JWT
+## 🔐 2. Autenticación JWT
 
-✔ Crear notas (el contenido se encripta antes de guardarse)
+Flujo básico:
 
-✔ Consultar notas (se desencriptan automáticamente)
+1. El usuario se registra en `/api/Auth/register`
+2. Inicia sesión en `/api/Auth/login`
+3. La API devuelve un **JWT**
+4. Para acceder a rutas protegidas se envía:
 
-✔ Actualizar / Eliminar notas
+   Authorization: Bearer <tu_token>
 
-✔ Aislar notas por usuario (solo ves tus notas)
+Solo usuarios autenticados pueden consumir los endpoints de notas.
 
-Perfecto para:
+---
 
-Seguridad backend
+## 🔏 3. Encriptación AES-256 de las notas
 
-Demostrar criptografía real
+Se usa un servicio `AesEncryptionService` que:
 
-Proyectos escolares y profesionales
+- Toma el texto plano (`content`)
+- Lo encripta con **AES-256** usando una clave de 32 bytes y un IV de 16 bytes
+- Guarda el resultado en la base de datos como texto encriptado (Base64)
+- Al leer la nota, desencripta y devuelve el contenido original
 
-🔐 2. Autenticación JWT
-¿Cómo funciona?
-
-1️⃣ El usuario se registra → /api/Auth/register
-2️⃣ Inicia sesión → /api/Auth/login
-3️⃣ La API genera un token JWT
-4️⃣ Las rutas protegidas requieren enviar:
-
-Authorization: Bearer <token>
-
-Esto garantiza que solo usuarios autorizados pueden ver o crear notas.
-
-🔏 3. Encriptación AES-256 del contenido de las notas
-Flujo:
-
-El usuario envía texto plano
-
-El servicio AesEncryptionService aplica AES-256
-
-Se almacena contenido cifrado en SQLite
-
-Al leer la nota, la API la desencripta automáticamente
-
-Ejemplo
+### Ejemplo
 
 Entrada del usuario (request JSON):
 
-{
-"title": "Mi primera nota",
-"content": "Esta es información secreta."
-}
+    {
+      "title": "Mi primera nota",
+      "content": "Esta es información secreta."
+    }
 
-Contenido en la base de datos (encriptado):
+Contenido guardado en la BD (encriptado, ejemplo):
 
-3Aa91xmZ8TqRNVvGk+8O1A5j2Q9n1rPV...
+    3Aa91xmZ8TqRNVvGk+8O1A5j2Q9n1rPV...
 
-Respuesta devuelta al usuario (desencriptada):
+Respuesta que ve el usuario:
 
-{
-"id": 1,
-"title": "Mi primera nota",
-"content": "Esta es información secreta."
-}
+    {
+      "id": 1,
+      "title": "Mi primera nota",
+      "content": "Esta es información secreta."
+    }
 
-📘 4. ¿Por qué Swagger y no Postman?
-Característica Swagger Postman
-Se genera desde la API automáticamente ✔ ✖
-Probar endpoints sin configuración extra ✔ ✖
-Documentación integrada ✔ ✖
-Autorizar JWT con 1 clic ✔ ✔
-Ver DTOs y modelos ✔ ✔
-Beneficios reales:
+---
 
-Ver JSON de ejemplo automáticamente
+## 📘 4. ¿Por qué usamos Swagger en lugar de Postman?
 
-Probar cada endpoint con un botón
+Aunque Postman es muy bueno, para este proyecto Swagger nos dio ventajas:
 
-Agregar JWT sin escribir headers
+- Se genera automáticamente a partir del código de la API
+- Permite probar endpoints sin instalar nada extra
+- Muestra los modelos (DTOs) y esquemas de forma clara
+- Tiene botón “Authorize” para meter el JWT una sola vez
+- Es perfecto para exponer el proyecto en clase (todo visual)
 
-Ideal para presentar en clase
+En resumen: solo con levantar la API ya tienes documentación viva y un “Postman” integrado.
 
-🗄️ 5. Base de datos: Migración de LocalDB a SQLite
-❌ ¿Por qué NO LocalDB?
+---
 
-No funciona en Render
+## 🗄️ 5. Base de datos: de LocalDB a SQLite
 
-Requiere SQL Server instalado
+### Por qué NO usamos LocalDB
 
-No es portable
+- No funciona bien en plataformas como Render
+- Requiere SQL Server instalado
+- No es portable
 
-✅ ¿Por qué SÍ SQLite?
+### Por qué SÍ usamos SQLite
 
-Un solo archivo .db
+- Es un solo archivo `notes.db`
+- Ideal para demos y proyectos pequeños
+- Es compatible con Entity Framework Core
+- Funciona en Render sin configuración adicional
 
-Perfecto para demos
+Cadena de conexión en `appsettings.json`:
 
-Funciona en Render sin configuración
+    "ConnectionStrings": {
+      "DefaultConnection": "Data Source=notes.db"
+    }
 
-Totalmente compatible con EF Core
+Para crear la base de datos y aplicar la migración inicial:
 
-Cadena de conexión:
-"ConnectionStrings": {
-"DefaultConnection": "Data Source=notes.db"
-}
+    dotnet ef migrations add Initial
+    dotnet ef database update
 
-Crear la base de datos:
-dotnet ef migrations add Initial
-dotnet ef database update
+Esto genera automáticamente `notes.db`.
 
-📂 6. Arquitectura del proyecto
-API BACKEND1
-│
-├── Controllers
-│ ├── AuthController.cs
-│ ├── NotesController.cs
-│
-├── Data
-│ ├── AppDbContext.cs
-│
-├── DTOs
-│ ├── LoginDto.cs
-│ ├── RegisterDto.cs
-│ ├── NoteCreateDto.cs
-│ ├── NoteUpdateDto.cs
-│ ├── NoteResponseDto.cs
-│
-├── Models
-│ ├── User.cs
-│ ├── Note.cs
-│
-├── Services
-│ ├── AesEncryptionService.cs
-│ ├── IEncryptionService.cs
-│
-└── notes.db (SQLite)
+---
 
-📊 7. Diagrama UML (Mermaid)
-classDiagram
+## 📂 6. Arquitectura del proyecto
 
-class User {
-int Id
-string Username
-string PasswordHash
-List<Note> Notes
-}
+Estructura general:
 
-class Note {
-int Id
-string Title
-string EncryptedContent
-int UserId
-User User
-}
+    API BACKEND1
+    │
+    ├── Controllers
+    │   ├── AuthController.cs
+    │   └── NotesController.cs
+    │
+    ├── Data
+    │   └── AppDbContext.cs
+    │
+    ├── DTOs
+    │   ├── LoginDto.cs
+    │   ├── RegisterDto.cs
+    │   ├── NoteCreateDto.cs
+    │   ├── NoteUpdateDto.cs
+    │   └── NoteResponseDto.cs
+    │
+    ├── Models
+    │   ├── User.cs
+    │   └── Note.cs
+    │
+    ├── Services
+    │   ├── AesEncryptionService.cs
+    │   └── IEncryptionService.cs
+    │
+    └── notes.db  (SQLite)
 
-class AesEncryptionService {
-+Encrypt(text)
-+Decrypt(cipher)
-}
+---
 
-class AuthController {
-+Register()
-+Login()
-}
+## 📊 7. Diagrama UML (texto estilo Mermaid)
 
-class NotesController {
-+Create()
-+GetAll()
-+GetById()
-+Update()
-+Delete()
-}
+Diagrama conceptual de clases:
 
-User "1" --> "many" Note
-NotesController --> AesEncryptionService
-AuthController --> User
+    class User {
+        int Id
+        string Username
+        string PasswordHash
+        List<Note> Notes
+    }
 
-🚀 8. Ejecutar el proyecto localmente
-dotnet restore
-dotnet ef database update
-dotnet run
+    class Note {
+        int Id
+        string Title
+        string EncryptedContent
+        int UserId
+        User User
+    }
 
-Abrir Swagger:
+    class AesEncryptionService {
+        Encrypt(text)
+        Decrypt(cipher)
+    }
 
-👉 http://localhost:5063/swagger
+    class AuthController {
+        Register()
+        Login()
+    }
 
-🔥 9. Endpoints principales
-🧑‍💻 Autenticación
+    class NotesController {
+        Create()
+        GetAll()
+        GetById()
+        Update()
+        Delete()
+    }
 
-POST /api/Auth/register
+Relaciones principales:
 
-POST /api/Auth/login → devuelve JWT
+- Un `User` tiene muchas `Note`
+- `NotesController` usa `AesEncryptionService`
+- `AuthController` trabaja con `User`
 
-📝 Notas (requiere JWT)
+---
 
-POST /api/Notes
+## 🚀 8. Ejecutar el proyecto localmente
 
-GET /api/Notes
+1. Restaurar dependencias:
 
-GET /api/Notes/{id}
+   dotnet restore
 
-PUT /api/Notes/{id}
+2. Crear / actualizar la base de datos:
 
-DELETE /api/Notes/{id}
+   dotnet ef database update
 
-🌐 10. Despliegue en Render
-Build Command
-dotnet restore && dotnet build
+3. Ejecutar la API:
 
-Start Command
-dotnet API BACKEND1.dll
+   dotnet run
 
-Variables de entorno
-ASPNETCORE_ENVIRONMENT = Production
+4. Abrir Swagger en el navegador:
 
-Render levantará Swagger automáticamente.
+   http://localhost:5063/swagger
+
+---
+
+## 🔥 9. Endpoints principales
+
+### Autenticación
+
+- **POST** `/api/Auth/register`  
+  Crea un usuario nuevo.
+
+- **POST** `/api/Auth/login`  
+  Devuelve un JWT que se usará en los demás endpoints protegidos.
+
+### Notas (requiere JWT en el header)
+
+- **POST** `/api/Notes`  
+  Crea una nota encriptada.
+
+- **GET** `/api/Notes`  
+  Lista las notas del usuario autenticado.
+
+- **GET** `/api/Notes/{id}`  
+  Devuelve una nota desencriptada por id.
+
+- **PUT** `/api/Notes/{id}`  
+  Actualiza una nota existente.
+
+- **DELETE** `/api/Notes/{id}`  
+  Elimina una nota.
+
+---
+
+## 🌐 10. Despliegue en Render (resumen)
+
+1. Subir el proyecto a GitHub.
+2. En Render: “New Web Service” y conectar el repo.
+3. Build command:
+
+   dotnet restore && dotnet build
+
+4. Start command:
+
+   dotnet API BACKEND1.dll
+
+5. Variables de entorno:
+
+   ASPNETCORE_ENVIRONMENT = Production
+
+Render levantará la API y podrás usar Swagger en la URL pública de tu servicio.
+
+---
