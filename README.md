@@ -264,13 +264,3 @@ classDiagram
     NotesController --> AesEncryptionService
     AuthController --> User
 ```
-
----
-
-Relaciones principales
-
-Un User tiene muchas Note
-
-NotesController usa AesEncryptionService
-
-AuthController trabaja con User
