@@ -231,7 +231,7 @@ classDiagram
         int Id
         string Username
         string PasswordHash
-        List~Note~ Notes
+        Note[] Notes
     }
 
     class Note {
@@ -263,11 +263,14 @@ classDiagram
     User "1" --> "many" Note
     NotesController --> AesEncryptionService
     AuthController --> User
-
-Relaciones principales:
-
-- Un `User` tiene muchas `Note`
-- `NotesController` usa `AesEncryptionService`
-- `AuthController` trabaja con `User`
-
 ```
+
+---
+
+Relaciones principales
+
+Un User tiene muchas Note
+
+NotesController usa AesEncryptionService
+
+AuthController trabaja con User
