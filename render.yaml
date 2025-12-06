@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: notas-api
+    runtime: dotnet
+    buildCommand: "dotnet build"
+    startCommand: "dotnet run --urls=http://0.0.0.0:10000"
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
