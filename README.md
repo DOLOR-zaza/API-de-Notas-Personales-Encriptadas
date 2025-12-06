@@ -1,97 +1,76 @@
-🚀 BACKEND1 (Notas Encriptadas + Autenticación JWT)
-# 📝 API BACKEND1  
-### Sistema de Notas Encriptadas con Autenticación JWT, SQLite y Swagger  
-**Proyecto desarrollado por: Martin Cossio, Bladimir Mejia, Jesus Bibiano, Aaron Tellez**  
+🚀 API BACKEND1 – Notas Encriptadas + Autenticación JWT
+Proyecto desarrollado por: Martin Cossio, Bladimir Mejia, Jesús Bibiano, Aaron Téllez
 
-Este proyecto implementa una API REST moderna que permite a los usuarios **registrarse, iniciar sesión y gestionar notas personales encriptadas**.  
-Está construido con **ASP.NET Core 9**, **Entity Framework Core** y **SQLite** como base de datos embebida.
+API REST profesional que permite registrar usuarios, iniciar sesión y crear notas personales encriptadas, utilizando:
 
-La API incluye:
+🔐 JWT (JSON Web Tokens)
 
-- 🔐 **Autenticación JWT** (Login + Register)  
-- 🔏 **Encriptación AES-256 para el contenido de las notas**  
-- 🗄 **Persistencia con Entity Framework Core + SQLite**  
-- 📘 **Documentación interactiva con Swagger (OpenAPI)**  
-- 🧱 Arquitectura limpia con servicios, DTOs y controladores  
+🔏 AES-256
 
----
+🗄 SQLite + Entity Framework Core
 
-# ⭐ 1. ¿Qué hace esta API?
+📘 Swagger como documentación interactiva
+
+🧱 Arquitectura limpia: controllers, services, DTOs, models
+
+⭐ 1. ¿Qué hace esta API?
 
 Esta API permite:
 
-### ✔ Registrar usuarios  
-### ✔ Iniciar sesión y obtener un Token JWT  
-### ✔ Crear notas (contenido se encripta antes de guardarse)  
-### ✔ Consultar, editar y eliminar notas  
-### ✔ Desencriptar contenido al leerlo  
+✔ Registrar usuarios
+✔ Iniciar sesión y recibir un JWT
+✔ Crear notas — el contenido se encripta antes de guardarse
+✔ Obtener notas — se desencriptan automáticamente
+✔ Actualizar / Eliminar notas
+✔ Aislar datos por usuario (solo ves tus notas)
 
-Cada usuario solo puede acceder a sus propias notas.
+Perfecto para:
 
-Es ideal para demostrar:
+Demostrar seguridad backend
 
-- Seguridad en aplicaciones backend  
-- Uso de criptografía AES  
-- Persistencia real en base de datos  
-- Arquitectura profesional de API  
-- Buenas prácticas de autentición moderna  
+Criptografía real
 
----
+Arquitectura de APIs modernas
 
-# 🔐 2. Seguridad: Autenticación JWT
+Deploy profesional en Render
 
-La API usa JSON Web Tokens para identificar a los usuarios.
+🔐 2. Autenticación JWT (JSON Web Tokens)
+Flujo:
 
-### ¿Cómo funciona?
+Usuario se registra → /api/Auth/register
 
-1. El usuario se registra (`/api/Auth/register`)  
-2. Luego inicia sesión (`/api/Auth/login`)  
-3. La API genera un token JWT válido por tiempo limitado  
-4. Este token se envía en cada petición protegida:
+Usuario inicia sesión → /api/Auth/login
 
+API genera un JWT firmado
 
+Usuario lo envía en cada petición protegida:
 
 Authorization: Bearer <tu_token>
 
 
-Con esto, solo usuarios autenticados pueden crear/ver sus notas.
+Con eso, solo usuarios autenticados pueden acceder a /api/Notes.
 
----
-
-# 🔏 3. Encriptación AES-256 del contenido de las notas
-
-El objetivo era proteger el contenido del usuario incluso del lado del servidor.
+🔏 3. Encriptación AES-256 del contenido de las notas
 
 Usamos:
 
-- **AES (Advanced Encryption Standard)**
-- **Clave de 32 bytes (AES-256)**
-- **IV de 16 bytes**
+Clave de 32 bytes → AES-256
 
-### 🔁 Flujo de encriptación:
+IV de 16 bytes
 
-1. El usuario envía el texto plano desde Swagger  
-2. El servicio `AesEncryptionService` lo convierte a Base64 encriptado  
-3. EF Core guarda ese contenido cifrado dentro de SQLite  
-4. Cuando se consulta la nota, la API **desencripta automáticamente** antes de enviarla
+AesEncryptionService.cs para encriptar/desencriptar
 
-Ejemplo:
-
-**Entrada del usuario:**
-```json
+Ejemplo completo
+📝 Request (lo que envía el usuario)
 {
   "title": "Mi primera nota",
   "content": "Esta es información secreta."
 }
 
-
-Guardado en BD (ejemplo):
-
+🔐 Guardado en la base de datos (encriptado)
 3Aa91xmZ8TqRNVvGk+8O1A5j2Q9n1rPV...
 
-
-Respuesta desencriptada al usuario:
-
+🔓 Respuesta desencriptada devuelta al usuario
 {
   "id": 1,
   "title": "Mi primera nota",
@@ -100,60 +79,57 @@ Respuesta desencriptada al usuario:
 
 📘 4. ¿Por qué preferimos Swagger sobre Postman?
 
-Aunque Postman es muy útil, en este proyecto Swagger ofreció ventajas clave:
+| Característica                     | Swagger | Postman |
+| ---------------------------------- | :-----: | :-----: |
+| Se genera automáticamente          |    ✔    |    ✖    |
+| Probar endpoints sin configuración |    ✔    |    ✖    |
+| Documentación integrada            |    ✔    |    ✖    |
+| Autorización JWT con un clic       |    ✔    |    ✔    |
+| Ver DTOs y modelos directamente    |    ✔    |    ✔    |
+| Perfecto para exposición en clase  |    ✔    |    ✖    |
 
-| Característica                   | Swagger | Postman |
-| -------------------------------- | ------- | ------- |
-| Generado automáticamente         | ✔       | ✖       |
-| Pruebas sin configuración extra  | ✔       | ✖       |
-| Permite ver modelos y esquemas   | ✔       | ✔       |
-| Integrado en el pipeline del API | ✔       | ✖       |
-| Autorización JWT intuitiva       | ✔       | ✔       |
+Beneficios reales en nuestra presentación:
 
-🚀 Con Swagger solo levantamos la API y ya tenemos documentación interactiva
+Ver JSONs automáticamente
 
-Swagger nos permitió:
+Probar cualquier método con 1 clic
 
-Ver JSON de ejemplo
+Insertar el JWT con un botón (“Authorize”)
 
-Probar métodos POST sin escribir scripts
+Mostrar arquitectura y endpoints visualmente
 
-Autorizar con un botón
+🗄 5. Migración de Base de Datos: LocalDB → SQLite
+❌ Por qué NO usamos LocalDB
 
-Enseñar la API de forma visual para la presentación
+No funciona en Render
 
-🗄 5. Base de datos: EF Core → SQLite
+Requiere SQL Server instalado
 
-Inicialmente planeamos usar Entity Framework Core con LocalDB, pero:
+No es portable
 
-LocalDB no funciona fácilmente en despliegues como Render
+✔ Por qué SÍ usamos SQLite
 
-No queremos instalar SQL Server en todos lados
+Un solo archivo .db
 
-SQLite es más simple, portable y rápido para demos
+Súper liviano
 
-Por eso migramos a SQLite, que nos da:
+Soporta EF Core
 
-✔ Un solo archivo .db
+Funciona perfecto en Render
 
-✔ Perfecto para producción pequeña
+Ideal para demos y proyectos pequeños
 
-✔ Compatible con EF Core
-
-✔ Perfecto para Render
-
-En appsettings.json quedó así:
-
+🔧 Cadena de conexión final
 "ConnectionStrings": {
   "DefaultConnection": "Data Source=notes.db"
 }
 
-Creación de base de datos:
+🛠 Crear base de datos
 dotnet ef migrations add Initial
 dotnet ef database update
 
 
-Esto genera notes.db automáticamente.
+Esto genera automáticamente notes.db.
 
 📂 6. Arquitectura del Proyecto
 API BACKEND1
@@ -182,9 +158,9 @@ API BACKEND1
 │
 └── notes.db  (SQLite Database)
 
+📊 7. Diagrama UML (Mermaid)
 
-
-Diagrama UML:
+Este diagrama sí funciona en GitHub.
 
 classDiagram
     class User {
@@ -224,26 +200,24 @@ classDiagram
     NotesController --> AesEncryptionService
     AuthController --> User
 
-
-
-🚀 7. Cómo ejecutar el proyecto localmente
+🚀 8. Cómo ejecutar el proyecto localmente
 1️⃣ Restaurar dependencias
 dotnet restore
 
-2️⃣ Crear la BD si no existe
+2️⃣ Crear base de datos
 dotnet ef database update
 
-3️⃣ Ejecutar la API
+3️⃣ Ejecutar API
 dotnet run
 
 4️⃣ Abrir Swagger
 http://localhost:5063/swagger
 
-🔥 8. Endpoints Principales
+🔥 9. Endpoints Principales
 🧑‍💻 Autenticación
 POST /api/Auth/register
 
-Crea un usuario nuevo.
+Crear usuario nuevo.
 
 POST /api/Auth/login
 
@@ -252,27 +226,27 @@ Devuelve un JWT.
 📝 Notas (requiere JWT)
 POST /api/Notes
 
-Crea una nota encriptada.
+Crear nota (encriptada).
 
 GET /api/Notes
 
-Lista notas del usuario.
+Listar notas del usuario actual.
 
 GET /api/Notes/{id}
 
-Obtiene una nota desencriptada.
+Obtener nota desencriptada.
 
 PUT /api/Notes/{id}
 
-Actualiza una nota.
+Modificar nota.
 
 DELETE /api/Notes/{id}
 
-Elimina una nota.
+Eliminar nota.
 
-🌐 9. Lo que nos falta: Desplegar en Render
-1️⃣ Crear un repo en GitHub con este proyecto
-2️⃣ Ir a Render → New Web Service
+🌐 10. Cómo desplegar en Render
+1️⃣ Subir proyecto a GitHub
+2️⃣ En Render → “New Web Service”
 3️⃣ Seleccionar tu repo
 4️⃣ Build Command:
 dotnet restore && dotnet build
@@ -280,9 +254,9 @@ dotnet restore && dotnet build
 5️⃣ Start Command:
 dotnet API BACKEND1.dll
 
-6️⃣ Agregar variable:
+6️⃣ Variables de entorno:
 ASPNETCORE_ENVIRONMENT = Production
 
 7️⃣ Deploy 🚀
 
-Render detectará automáticamente el puerto y levantará Swagger
+Render levantará Swagger automáticamente.
