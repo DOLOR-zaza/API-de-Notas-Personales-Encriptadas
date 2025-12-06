@@ -47,7 +47,6 @@ Usuario lo envía en cada petición protegida:
 
 Authorization: Bearer <tu_token>
 
-
 Con eso, solo usuarios autenticados pueden acceder a /api/Notes.
 
 🔏 3. Encriptación AES-256 del contenido de las notas
@@ -63,8 +62,8 @@ AesEncryptionService.cs para encriptar/desencriptar
 Ejemplo completo
 📝 Request (lo que envía el usuario)
 {
-  "title": "Mi primera nota",
-  "content": "Esta es información secreta."
+"title": "Mi primera nota",
+"content": "Esta es información secreta."
 }
 
 🔐 Guardado en la base de datos (encriptado)
@@ -72,9 +71,9 @@ Ejemplo completo
 
 🔓 Respuesta desencriptada devuelta al usuario
 {
-  "id": 1,
-  "title": "Mi primera nota",
-  "content": "Esta es información secreta."
+"id": 1,
+"title": "Mi primera nota",
+"content": "Esta es información secreta."
 }
 
 📘 4. ¿Por qué preferimos Swagger sobre Postman?
@@ -121,13 +120,12 @@ Ideal para demos y proyectos pequeños
 
 🔧 Cadena de conexión final
 "ConnectionStrings": {
-  "DefaultConnection": "Data Source=notes.db"
+"DefaultConnection": "Data Source=notes.db"
 }
 
 🛠 Crear base de datos
 dotnet ef migrations add Initial
 dotnet ef database update
-
 
 Esto genera automáticamente notes.db.
 
@@ -135,40 +133,40 @@ Esto genera automáticamente notes.db.
 API BACKEND1
 │
 ├── Controllers
-│   ├── AuthController.cs
-│   ├── NotesController.cs
+│ ├── AuthController.cs
+│ ├── NotesController.cs
 │
 ├── Data
-│   ├── AppDbContext.cs
+│ ├── AppDbContext.cs
 │
 ├── DTOs
-│   ├── LoginDto.cs
-│   ├── RegisterDto.cs
-│   ├── NoteCreateDto.cs
-│   ├── NoteUpdateDto.cs
-│   ├── NoteResponseDto.cs
+│ ├── LoginDto.cs
+│ ├── RegisterDto.cs
+│ ├── NoteCreateDto.cs
+│ ├── NoteUpdateDto.cs
+│ ├── NoteResponseDto.cs
 │
 ├── Models
-│   ├── User.cs
-│   ├── Note.cs
+│ ├── User.cs
+│ ├── Note.cs
 │
 ├── Services
-│   ├── AesEncryptionService.cs
-│   ├── IEncryptionService.cs
+│ ├── AesEncryptionService.cs
+│ ├── IEncryptionService.cs
 │
-└── notes.db  (SQLite Database)
+└── notes.db (SQLite Database)
 
 📊 7. Diagrama UML (Mermaid)
 
 Este diagrama sí funciona en GitHub.
 
 classDiagram
-    class User {
-        int Id
-        string Username
-        string PasswordHash
-        List<Note> Notes
-    }
+class User {
+int Id
+string Username
+string PasswordHash
+List<Note> Notes
+}
 
     class Note {
         int Id
