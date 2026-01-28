@@ -236,6 +236,18 @@ Notas que yo compartí.
 
 Notas compartidas conmigo.
 
+## 🔄 Workflow de Comparticion de notas
+
+1. Usuario A crea una nota
+
+2. Usuario A la comparte con Usuario B
+
+3. Se guarda una relación en SharedNotes
+
+4. Usuario B puede verla (solo lectura)
+
+5. El sistema registra quién la compartió y cuándo
+
 ## 📜 Reglas de negocio implementadas
 
 1. Un usuario no puede registrarse dos veces
@@ -243,6 +255,30 @@ Notas compartidas conmigo.
 3. No se puede compartir una nota inexistente
 4. Las notas compartidas son solo de lectura
 5. Solo usuarios autenticados acceden a datos
+
+## Arquitectura del Proyecto
+
+API_BACKEND1
+│
+├── Controllers
+│ ├── AuthController.cs
+│ └── NotesController.cs
+│
+├── Data
+│ └── AppDbContext.cs
+│
+├── Models
+│ ├── User.cs
+│ ├── Note.cs
+│ └── SharedNote.cs
+│
+├── Services
+│ └── AesEncryptionService.cs
+│
+├── DTOs
+│ └── (Request / Response DTOs)
+│
+└── notes.db
 
 ## 🧩 Diagrama UML
 

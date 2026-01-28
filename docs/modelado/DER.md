@@ -3,25 +3,25 @@
 ```mermaid
 erDiagram
     USER {
-        int Id PK
-        string Username UNIQUE
-        string PasswordHash
+        int id
+        string username
+        string password_hash
     }
 
     NOTE {
-        int Id PK
-        string Title
-        string EncryptedContent
-        int UserId FK
+        int id
+        string title
+        string encrypted_content
+        int user_id
     }
 
     SHARED_NOTE {
-        int Id PK
-        int NoteId FK
-        int SharedByUserId FK
-        int SharedWithUserId FK
-        bool CanRead
-        datetime SharedAt
+        int id
+        int note_id
+        int shared_by_user_id
+        int shared_with_user_id
+        boolean can_read
+        datetime shared_at
     }
 
     USER ||--o{ NOTE : owns
