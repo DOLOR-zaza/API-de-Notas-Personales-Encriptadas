@@ -3,6 +3,7 @@ using System;
 using API_BACKEND1.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API_BACKEND1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260127074504_AddSharedNotes")]
+    partial class AddSharedNotes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.5");
@@ -47,9 +50,6 @@ namespace API_BACKEND1.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("CanRead")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("NoteId")
                         .HasColumnType("INTEGER");
 
@@ -59,16 +59,11 @@ namespace API_BACKEND1.Migrations
                     b.Property<int>("SharedByUserId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("SharedWithUserId")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("Id");
 
                     b.HasIndex("NoteId");
 
                     b.HasIndex("SharedByUserId");
-
-                    b.HasIndex("SharedWithUserId");
 
                     b.ToTable("SharedNotes");
                 });
@@ -117,17 +112,9 @@ namespace API_BACKEND1.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("API_BACKEND1.Models.User", "SharedWithUser")
-                        .WithMany()
-                        .HasForeignKey("SharedWithUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Note");
 
                     b.Navigation("SharedByUser");
-
-                    b.Navigation("SharedWithUser");
                 });
 
             modelBuilder.Entity("API_BACKEND1.Models.User", b =>
