@@ -259,29 +259,29 @@ Notas compartidas conmigo.
 ## Arquitectura del Proyecto
 
 ```mermaid
-API_BACKEND1/
-│
-├── Controllers/
-│ ├── AuthController.cs # Registro y autenticación (JWT)
-│ └── NotesController.cs # CRUD de notas y compartición
-│
-├── Data/
-│ └── AppDbContext.cs # Contexto de Entity Framework Core
-│
-├── Models/
-│ ├── User.cs # Entidad Usuario
-│ ├── Note.cs # Entidad Nota (contenido encriptado)
-│ └── SharedNote.cs # Entidad de relación (notas compartidas)
-│
-├── Services/
-│ └── AesEncryptionService.cs # Servicio de cifrado AES
-│
-├── DTOs/
-│ ├── Requests/ # DTOs de entrada (Create / Update)
-│ └── Responses/ # DTOs de salida (API responses)
-│
-├── notes.db # Base de datos SQLite (desarrollo)
-└── Program.cs # Configuración y arranque de la API
+graph TD
+    API["API_BACKEND1/"]
+    API --> Controllers["Controllers/"]
+    API --> Data["Data/"]
+    API --> Models["Models/"]
+    API --> Services["Services/"]
+    API --> DTOs["DTOs/"]
+    API --> DB["notes.db"]
+    API --> Program["Program.cs"]
+
+    Controllers --> Auth["AuthController.cs<br/>(JWT)"]
+    Controllers --> Notes["NotesController.cs<br/>(CRUD)"]
+
+    Data --> AppDb["AppDbContext.cs<br/>(EF Core)"]
+
+    Models --> User["User.cs"]
+    Models --> Note["Note.cs<br/>(Encriptado)"]
+    Models --> SharedNote["SharedNote.cs<br/>(Relación)"]
+
+    Services --> Aes["AesEncryptionService.cs<br/>(AES-256)"]
+
+    DTOs --> Requests["Requests/"]
+    DTOs --> Responses["Responses/"]
 ```
 
 ## 🧩 Diagrama UML
