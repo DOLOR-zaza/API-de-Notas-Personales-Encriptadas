@@ -258,27 +258,31 @@ Notas compartidas conmigo.
 
 ## Arquitectura del Proyecto
 
-API_BACKEND1
+```mermaid
+API_BACKEND1/
 │
-├── Controllers
-│ ├── AuthController.cs
-│ └── NotesController.cs
+├── Controllers/
+│ ├── AuthController.cs # Registro y autenticación (JWT)
+│ └── NotesController.cs # CRUD de notas y compartición
 │
-├── Data
-│ └── AppDbContext.cs
+├── Data/
+│ └── AppDbContext.cs # Contexto de Entity Framework Core
 │
-├── Models
-│ ├── User.cs
-│ ├── Note.cs
-│ └── SharedNote.cs
+├── Models/
+│ ├── User.cs # Entidad Usuario
+│ ├── Note.cs # Entidad Nota (contenido encriptado)
+│ └── SharedNote.cs # Entidad de relación (notas compartidas)
 │
-├── Services
-│ └── AesEncryptionService.cs
+├── Services/
+│ └── AesEncryptionService.cs # Servicio de cifrado AES
 │
-├── DTOs
-│ └── (Request / Response DTOs)
+├── DTOs/
+│ ├── Requests/ # DTOs de entrada (Create / Update)
+│ └── Responses/ # DTOs de salida (API responses)
 │
-└── notes.db
+├── notes.db # Base de datos SQLite (desarrollo)
+└── Program.cs # Configuración y arranque de la API
+```
 
 ## 🧩 Diagrama UML
 
