@@ -258,6 +258,7 @@ Notas compartidas conmigo.
 
 ## Arquitectura del Proyecto
 
+```mermaid
 API_BACKEND1/
 │
 ├── Controllers/
@@ -281,6 +282,7 @@ API_BACKEND1/
 │
 ├── notes.db # Base de datos SQLite (desarrollo)
 └── Program.cs # Configuración y arranque de la API
+```
 
 ## 🧩 Diagrama UML
 
