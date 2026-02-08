@@ -62,7 +62,7 @@ Responsabilidades:
 
 ---
 
-## 🧠 Decisiones de diseño
+## 🧠 Decisiones de diseño clave
 
 - Se separó `SharedNote` como entidad independiente para:
   - Registrar timestamps

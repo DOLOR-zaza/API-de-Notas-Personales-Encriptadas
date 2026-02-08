@@ -114,17 +114,54 @@ Ejemplo:
 }
 ```
 
-### ¿Por qué Swagger y no Postman?
+## Configuración de rutas y controladores
 
-Swagger fue elegido porque:
+## Controladores
+Las rutas de la API se definen mediante controladores ubicados en la carpeta `Controllers/`.
 
-1. Se genera automáticamente desde el código
-2. No requiere configuración extra
-3. Permite autorizar JWT con un botón
-4. Muestra modelos y DTOs
-5. Ideal para presentaciones académicas
+Cada controlador utiliza atributos como:
 
-Swagger actúa como documentación + Postman integrado.
+- `[ApiController]`
+- `[Route("api/[controller]")]`
+- `[HttpGet]`, `[HttpPost]`, etc.
+
+Ejemplo:
+
+```csharp
+[ApiController]
+[Route("api/[controller]")]
+public class NotesController : ControllerBase
+```
+## Esto genera rutas como:
+
+```csharp 
+GET /api/Notes
+
+POST /api/Notes/{id}
+```
+
+## Registro en Program.cs
+
+En `Program.cs` se registran los controladores y servicios:
+
+
+```csharp
+builder.Services.AddControllers();
+app.MapControllers();
+```
+Esto permite que ASP.NET Core descubra automáticamente todas las rutas.
+
+
+## DTOs y Servicios
+
+- Los **DTOs** se usan para separar el contrato de la API del modelo interno.
+- Los **Servicios** encapsulan lógica reutilizable (por ejemplo, cifrado AES).
+
+Ejemplo:
+- `NoteCreateDto`
+- `NoteResponseDto`
+- `AesEncryptionService`
+
 
 ## 🗄️ Base de datos: SQLite + EF Core
 
@@ -200,42 +237,6 @@ http://localhost:5063/swagger
 }
 ```
 
-## 📝 Notas
-
-**POST /api/Notes**
-
-Crea una nota encriptada.
-
-**GET /api/Notes**
-
-Obtiene las notas del usuario.
-
-**GET /api/Notes/{id}**
-
-Obtiene una nota específica.
-
-**PUT /api/Notes/{id}**
-
-Actualiza una nota.
-
-**DELETE /api/Notes/{id}**
-
-Elimina una nota.
-
-## 🤝 Compartición de notas
-
-**POST /api/Notes/{id}/share/{userId}**
-
-Comparte una nota con otro usuario.
-
-**GET /api/Notes/shared/by-me**
-
-Notas que yo compartí.
-
-**GET /api/Notes/shared/with-me**
-
-Notas compartidas conmigo.
-
 ## 🔄 Workflow de Comparticion de notas
 
 1. Usuario A crea una nota
@@ -247,6 +248,160 @@ Notas compartidas conmigo.
 4. Usuario B puede verla (solo lectura)
 
 5. El sistema registra quién la compartió y cuándo
+
+---
+
+## 📌 Contratos de Endpoints (Request/Response)
+
+> Aquí se documenta el contrato de cada endpoint con ejemplos mock de request/response y códigos de estado.
+
+###  GET /api/Notes
+**Descripción:** Lista tus notas (del usuario autenticado).  
+*Status 200 OK*
+```json
+[
+  { "id": 1, "title": "Nota 1", "content": "Contenido descifrado" },
+  { "id": 2, "title": "Nota 2", "content": "Otro contenido" }
+]
+```
+###  GET /api/Notes/{id}
+**Descripción:** Obtiene una nota por id si te pertenece.  
+*Status 200 OK*
+```json
+{ "id": 1, "title": "Nota 1", "content": "Contenido descifrado" }
+```
+**Status 404 NotFound** 
+```json
+{ "message": "Nota no encontrada" }
+```
+### POST /api/Notes
+**Descripción:** Crea una nota (se encripta en BD). 
+
+**Request:**
+```json
+{ "title": "Mi nota", "content": "Secreto" }
+```
+**Status 201 Created**
+```json
+{ "id": 1, "title": "Mi nota", "content": "Secreto" }
+```
+### PUT /api/Notes/{id}
+**Descripción:** Actualiza una nota tuya. 
+
+**Request:** 
+```json
+{ "title": "Mi nota", "content": "Secreto" }
+```
+*Status 204 NoContent*
+
+*Status 404 NotFound*
+```json
+{ "message": "Nota no encontrada" }
+```
+### DELETE /api/Notes/{id}
+**Descripción:** Elimina una nota tuya.
+
+*Status 204 NoContent*
+
+*Status 404 NotFound*
+
+```json
+{ "message": "Nota no encontrada" }
+```
+
+## POST /api/Notes/{noteId}/share/{userId}
+**Descripción:** Comparte una nota tuya con un usuario específico.
+
+*Status 200 OK*
+
+```json
+{
+  "message": "Nota compartida correctamente",
+  "noteId": 1,
+  "sharedWithUserId": 2
+}
+```
+
+## GET /api/Notes/shared/by-me
+**Descripción:** Lista las notas que yo he compartido.
+
+*Status 200 OK*
+
+```json
+[
+  {
+    "noteId": 1,
+    "title": "Nota 1",
+    "sharedWithUser": "pedro",
+    "sharedAt": "2026-02-01T12:00:00Z",
+    "canRead": true
+  }
+]
+```
+
+## GET /api/Notes/shared/with-me
+**Descripción:** Lista las notas que me compartieron a mi.
+
+*Status 200 OK*
+
+```json
+[
+  {
+    "noteId": 1,
+    "title": "Nota 1",
+    "sharedBy": "juan",
+    "sharedAt": "2026-02-01T12:00:00Z",
+    "canRead": true
+  }
+]
+``` 
+
+## Pruebas rápidas
+
+1. Health check (API viva)
+```bash
+curl http://localhost:5063/health
+```
+2. Login (Obtener el token)
+```bash
+curl -X POST http://localhost:5063/api/Auth/login \
+  -H "Content-Type: application/json" \
+  -d '{ "username": "admin", "password": "1234" }'
+``` 
+3. Crear nota (requiere token)
+```bash
+curl -X POST http://localhost:5063/api/Notes \
+  -H "Authorization: Bearer <TOKEN_AQUI>" \
+  -H "Content-Type: application/json" \
+  -d '{ "title": "Nota", "content": "Secreto" }'
+``` 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 📜 Reglas de negocio implementadas
 
@@ -284,60 +439,6 @@ graph TD
     DTOs --> Responses["Responses/"]
 ```
 
-## 🧩 Diagrama UML
-
-```mermaid
-classDiagram
-    class User {
-        int Id
-        string Username
-        string PasswordHash
-        List~Note~ Notes
-    }
-
-    class Note {
-        int Id
-        string Title
-        string EncryptedContent
-        int UserId
-    }
-
-    class SharedNote {
-        int Id
-        int NoteId
-        int SharedByUserId
-        int SharedWithUserId
-        bool CanRead
-        DateTime SharedAt
-    }
-
-    class AesEncryptionService {
-        Encrypt(text) string
-        Decrypt(cipher) string
-    }
-
-    class AuthController {
-        Register()
-        Login()
-    }
-
-    class NotesController {
-        Create()
-        GetAll()
-        GetById()
-        Update()
-        Delete()
-        Share()
-        SharedByMe()
-        SharedWithMe()
-    }
-
-    User "1" --> "many" Note
-    User "1" --> "many" SharedNote
-    Note "1" --> "many" SharedNote
-    NotesController --> AesEncryptionService
-    AuthController --> User
-```
 
 ## ✅ Estado del proyecto
 
