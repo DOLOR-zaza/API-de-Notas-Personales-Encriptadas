@@ -1,103 +1,96 @@
-# 📘 Modelado del Dominio – API de Notas Encriptadas
+# README_modelado — Dominio y decisiones de modelado
 
-## 🎯 Dominio del sistema
-
-El sistema es una **API de gestión de notas personales seguras**, donde los usuarios pueden:
-
-- Crear notas privadas
-- Proteger su contenido mediante encriptación
-- Compartir notas con otros usuarios
-- Controlar permisos de lectura
-
-El dominio se centra en **usuarios, notas y relaciones de compartición**, priorizando la seguridad y la integridad de los datos.
+Este documento explica el **dominio**, las **entidades**, las **relaciones** y las **reglas** del sistema *API BACKEND1*.
 
 ---
 
-## 🧩 Entidades principales
+## 1) Dominio: ¿qué resuelve el sistema?
 
-### User
+El sistema implementa una API REST donde cada usuario puede:
 
-Representa a un usuario del sistema.
+- Registrarse e iniciar sesión (JWT).
+- Crear notas personales (contenido **encriptado con AES-256**).
+- Compartir notas con otros usuarios **de forma controlada** (solo lectura u otros permisos).
+- Consultar “notas compartidas por mí” y “notas compartidas conmigo”.
+- Registrar acciones importantes en una bitácora (**auditoría**).
 
-Responsabilidades:
-
-- Autenticarse
-- Ser dueño de notas
-- Compartir notas con otros usuarios
-
----
-
-### Note
-
-Entidad principal del negocio.
-
-Responsabilidades:
-
-- Almacenar información sensible
-- Garantizar que el contenido se guarde encriptado
-- Pertenecer a un solo usuario
+**Problema que resuelve:** evita guardar información sensible en texto plano y agrega control de acceso y trazabilidad para la compartición.
 
 ---
 
-### SharedNote
+## 2) Entidades y propósito (≥ 5)
 
-Entidad de relación (tabla puente).
+1. **User**
+   - Representa a una cuenta del sistema.
+   - Tiene credenciales (password hasheado) y metadata de auditoría (CreatedAt/UpdatedAt).
 
-Responsabilidades:
+2. **Note** *(entidad principal del negocio)*
+   - Representa una nota propiedad de un usuario.
+   - Guarda `EncryptedContent` (cifrado) y timestamps.
 
-- Representar una nota compartida
-- Indicar quién comparte la nota
-- Indicar quién la recibe
-- Definir permisos de lectura
+3. **SharedNote** *(entidad puente / relación)*
+   - Modela la compartición de una nota:
+     - quién comparte (`SharedByUserId`)
+     - a quién se comparte (`SharedWithUserId`)
+     - qué nota (`NoteId`)
+     - bajo qué permiso (`PermissionId`)
+   - Permite la relación **N–N** entre usuarios y notas.
+
+4. **Permission**
+   - Catálogo de permisos para compartir (ej. `READ`).
+   - Evita “booleans sueltos” y hace el modelo extensible (ej. READ/WRITE/ADMIN en el futuro).
+
+5. **AuditLog**
+   - Bitácora con acciones relevantes (ej. REGISTER, LOGIN, CREATE_NOTE, SHARE_NOTE).
+   - Ayuda a rastrear eventos para debugging o auditoría.
 
 ---
 
-## 🔗 Relaciones clave
+## 3) Relaciones (cardinalidades)
 
 - **User 1–N Note**
-  - Un usuario puede tener muchas notas
-- **User N–N Note (vía SharedNote)**
-  - Un usuario puede compartir muchas notas
-  - Una nota puede compartirse con varios usuarios
+  - Un usuario puede tener muchas notas.
+  - Cada nota pertenece a un único usuario.
+
+- **User N–N Note** (vía **SharedNote**)
+  - Un usuario puede recibir muchas notas compartidas.
+  - Una nota puede compartirse con muchos usuarios.
+
+- **Permission 1–N SharedNote**
+  - Un permiso puede aplicarse a muchas comparticiones.
+
+- **User 1–N AuditLog**
+  - Un usuario genera muchas entradas de auditoría.
+
+- **Note 0–N AuditLog**
+  - Algunas acciones se ligan a una nota (crear/editar/compartir), otras no (login).
 
 ---
 
-## 🧠 Decisiones de diseño clave
+## 4) Reglas mínimas del modelo (obligatorias) — cómo cumplimos
 
-- Se separó `SharedNote` como entidad independiente para:
-  - Registrar timestamps
-  - Manejar permisos
-  - Mantener normalización
-- Se usó **SQLite** por portabilidad
-- Se usó **Entity Framework Core** para ORM
-- Se evitó texto plano en la base de datos
+✅ **5+ entidades:** User, Note, SharedNote, Permission, AuditLog  
+✅ **Timestamps:** CreatedAt/UpdatedAt en User, Note, SharedNote; CreatedAt en AuditLog  
+✅ **Relación 1–N:** User → Notes; User → AuditLogs; Permission → SharedNotes  
+✅ **Relación N–N:** User ↔ Note (a través de SharedNote)  
+✅ **Regla de integridad:** Username único; EncryptedContent NOT NULL; Permission.Code único; FKs consistentes
 
 ---
 
-## 📏 Reglas de integridad del modelo
+## 5) Decisiones clave (por qué así)
 
-1. El `Username` del usuario es único
-2. Una `Note` siempre pertenece a un `User`
-3. Una nota compartida no puede eliminar al usuario receptor
-4. `EncryptedContent` nunca es nulo
-5. Una nota compartida solo puede leerse si `CanRead = true`
-
----
-
-## 📌 Supuestos (Assumptions)
-
-- El sistema es educativo / demo
-- No se permite edición de notas compartidas
-- El usuario dueño mantiene control total
-- El sistema no maneja roles avanzados (admin)
+- **SharedNote como entidad puente**: hace la compartición explícita y extensible (permisos, auditoría, timestamps).
+- **Permission como catálogo**: permite crecer el sistema sin cambiar la tabla de compartición (solo agregas permisos).
+- **AuditLog**: agrega trazabilidad y evidencia de acciones (útil para seguridad y debugging).
+- **SQLite**: facilita despliegue y demos (un archivo), compatible con EF Core.
 
 ---
 
-## ✅ Cumplimiento del checklist
+## 6) Supuestos (assumptions)
 
-- ✔ 5+ entidades (User, Note, SharedNote)
-- ✔ 1–N (User → Note)
-- ✔ N–N (User ↔ Note vía SharedNote)
-- ✔ ORM implementado (EF Core)
-- ✔ Migraciones aplicadas
-- ✔ Proyecto compila y corre
+- El contenido se guarda **siempre cifrado** en la BD (solo se desencripta al responder).
+- El permiso mínimo es **READ**.
+- Una nota se puede compartir a múltiples usuarios.
+- Se recomienda evitar duplicados: una nota no debería compartirse 2 veces al mismo usuario (constraint/índice único).
+- El “dueño” de la nota es el único que puede compartirla.
+

@@ -7,20 +7,25 @@ public class SharedNote
     public int Id { get; set; }
 
     public int NoteId { get; set; }
-    public Note Note { get; set; }
+    public Note? Note { get; set; }
 
     // QUIÉN la comparte
     public int SharedByUserId { get; set; }
-    public User SharedByUser { get; set; }
+    public User? SharedByUser { get; set; }
 
     //  A QUIÉN se le comparte
     public int SharedWithUserId { get; set; }
-    public User SharedWithUser { get; set; }
+    public User? SharedWithUser { get; set; }
+
+    // Permiso por cataloo
+    public int PermissionId { get; set; }
+    public Permission? Permission { get; set; }
 
     public DateTime SharedAt { get; set; } = DateTime.UtcNow;
 
-    //  Permisos
-    public bool CanRead { get; set; } = true;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
 }
 
 }

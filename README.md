@@ -1,462 +1,193 @@
-# API BACKEND1 – Sistema de Notas Encriptadas con Compartición y JWT
+# 🚀 API BACKEND1: Sistema de Notas Encriptadas
 
-Proyecto desarrollado por:  
-**Aaron Téllez**
+Sistema de gestión de notas con compartición controlada, permisos de acceso, auditoría y seguridad robusta mediante JWT y AES-256.
+
+**Desarrollado por:** Aaron Téllez
 
 ---
 
 ## 📌 Objetivo del proyecto
+Desarrollar una API REST segura que permita a los usuarios gestionar notas personales encriptadas. El sistema soporta compartición controlada entre usuarios y cumple con un modelo de dominio de más de 5 entidades.
 
-El objetivo de este proyecto es desarrollar una **API REST segura** que permita a los usuarios:
+### Capacidades principales:
+* 🔐 **Seguridad:** Registro e inicio de sesión con JWT.
+* 🛡️ **Privacidad:** Notas personales encriptadas con AES-256.
+* 🤝 **Colaboración:** Compartición de notas con otros usuarios.
+* 🚦 **Control:** Gestión de permisos (lectura/escritura) y auditoría.
+* 📖 **Documentación:** Autogenerada con Swagger (OpenAPI).
 
-- Registrarse e iniciar sesión de forma segura
-- Crear notas personales **encriptadas**
-- Compartir notas con otros usuarios
-- Controlar quién puede leer una nota
-- Acceder a notas propias y compartidas mediante autenticación JWT
-
-El proyecto simula un sistema real de notas privadas similar a aplicaciones como **Notion, Simplenote o Google Keep**, pero con énfasis en **seguridad backend, criptografía y control de acceso**.
+El proyecto simula un sistema real de notas privadas similar a Notion, Simplenote o Google Keep, con énfasis en seguridad backend, criptografía y control de acceso.
 
 ---
 
 ## 🧠 ¿Qué problemática resuelve?
-
-Este proyecto resuelve varias problemáticas comunes:
-
-- ❌ Notas guardadas en texto plano
-- ❌ Falta de control de acceso por usuario
-- ❌ APIs sin autenticación
-- ❌ Compartición sin trazabilidad
-- ❌ Bases de datos difíciles de desplegar
-
-La solución implementa **encriptación AES-256**, **JWT**, **SQLite** y **Entity Framework Core**, permitiendo un backend moderno, portable y seguro.
+Este proyecto aborda fallos comunes en sistemas de información tradicionales:
+- [x] **Privacidad:** Evita que las notas se almacenen en texto plano.
+- [x] **Aislamiento:** Garantiza que los datos solo sean accesibles por el dueño o autorizados.
+- [x] **Trazabilidad:** Registro de acciones relevantes mediante logs de auditoría.
+- [x] **Portabilidad:** Base de datos ligera (SQLite) fácil de desplegar.
 
 ---
 
 ## 🧱 Tecnologías utilizadas
+* **Lenguaje/Framework:** C# / ASP.NET Core (.NET 9)
+* **ORM:** Entity Framework Core
+* **Base de Datos:** SQLite
+* **Seguridad:** JWT (JSON Web Tokens) & AES-256 (Criptografía)
+* **Documentación:** Swagger (OpenAPI)
 
-- **C# / ASP.NET Core (.NET 9)**
-- **Entity Framework Core**
-- **SQLite**
-- **JWT (JSON Web Tokens)**
-- **AES-256**
-- **Swagger (OpenAPI)**
-
----
-
-## 💡 ¿Por qué usamos C# y .NET?
-
-Elegimos **C# con ASP.NET Core** porque:
-
-- Es un framework **robusto y profesional**
-- Tiene soporte nativo para **JWT, criptografía y seguridad**
-- Entity Framework Core facilita el manejo de relaciones complejas
-- Excelente rendimiento
-- Ideal para APIs empresariales
-- Swagger se integra automáticamente
-- Es ampliamente usado en la industria
+> **¿Por qué .NET?** Se eligió por ser un framework robusto con soporte nativo para criptografía, alto rendimiento y una excelente integración con herramientas industriales y educativas ademas de su integracoin automatica con Swagger.
 
 ---
 
-## 🔐 Seguridad: Autenticación JWT
+## 🔐 Seguridad y Criptografía
 
-La API utiliza **JWT** para autenticar a los usuarios.
+### 1. Autenticación JWT
+La API utiliza tokens para validar la identidad.
+- **Flujo:** Registro -> Login -> Obtención de Token -> Envío en Header.
+- **Header Requerido:** `Authorization: Bearer <TOKEN>`
 
-### Flujo de autenticación:
+### 2. Encriptación AES-256
+El contenido de las notas nunca toca el disco en texto plano.
+- **Algoritmo:** AES de 32 bytes.
+- **Persistencia:** Almacenado en Base64 tras la encriptación.
 
-1. El usuario se registra
-2. Inicia sesión
-3. El servidor devuelve un JWT
-4. El JWT se envía en cada request protegido
-
----
-
-### Authorization: Bearer token
-
-### 🔏 Encriptación AES-256
-
-El contenido de las notas **nunca se guarda en texto plano**.
-
-- Algoritmo: AES
-- Clave: 32 bytes (AES-256)
-- IV: 16 bytes
-- Guardado en Base64
-
-### Flujo:
+### 3. Flujo de encriptación
 
 1. El usuario envía texto plano
+
 2. El backend lo encripta
+
 3. Se guarda en SQLite
+
 4. Al consultarse, se desencripta automáticamente
-
-Ejemplo:
-
-**Request**
-
-```json
-{
-  "title": "Mi nota",
-  "content": "Contenido secreto"
-}
-```
-
-**Guardado en BD**
-
-"Xk29Asl29F3s0Q9z..."
-
-**Respuesta**
-
-```json
-{
-  "id": 1,
-  "title": "Mi nota",
-  "content": "Contenido secreto"
-}
-```
-
-## Configuración de rutas y controladores
-
-## Controladores
-Las rutas de la API se definen mediante controladores ubicados en la carpeta `Controllers/`.
-
-Cada controlador utiliza atributos como:
-
-- `[ApiController]`
-- `[Route("api/[controller]")]`
-- `[HttpGet]`, `[HttpPost]`, etc.
-
-Ejemplo:
-
-```csharp
-[ApiController]
-[Route("api/[controller]")]
-public class NotesController : ControllerBase
-```
-## Esto genera rutas como:
-
-```csharp 
-GET /api/Notes
-
-POST /api/Notes/{id}
-```
-
-## Registro en Program.cs
-
-En `Program.cs` se registran los controladores y servicios:
-
-
-```csharp
-builder.Services.AddControllers();
-app.MapControllers();
-```
-Esto permite que ASP.NET Core descubra automáticamente todas las rutas.
-
-
-## DTOs y Servicios
-
-- Los **DTOs** se usan para separar el contrato de la API del modelo interno.
-- Los **Servicios** encapsulan lógica reutilizable (por ejemplo, cifrado AES).
-
-Ejemplo:
-- `NoteCreateDto`
-- `NoteResponseDto`
-- `AesEncryptionService`
-
-
-## 🗄️ Base de datos: SQLite + EF Core
-
-### ¿Por qué SQLite?
-
-- Un solo archivo (notes.db)
-- No requiere servidor
-- Ideal para Render
-- Compatible con EF Core
-- Fácil de versionar
-
-### Cadena de conexión:
-
-```json
-"ConnectionStrings": {
-"DefaultConnection": "Data Source=notes.db"
-}
-```
-
-## ⚙️ Cómo ejecutar el proyecto
-
-1. Restaurar dependencias:
-
-```json
-dotnet restore
-```
-
-2. Aplicar Migraciones:
-
-```json
-dotnet ef database update
-```
-
-3. Ejecutar API:
-
-```json
-dotnet run
-```
-
-4. Abrir en Swagger:
-
-```json
-http://localhost:5063/swagger
-```
-
-## 📡 Endpoints del sistema
-
-### Autenticacion
-
-**POST /api/Auth/register**
-
-```json
-{
-  "username": "alice",
-  "password": "1234"
-}
-```
-
-**POST /api/Auth/login**
-
-```json
-{
-  "username": "alice",
-  "password": "1234"
-}
-```
-
-**Response**
-
-```json
-{
-  "token": "jwt..."
-}
-```
-
-## 🔄 Workflow de Comparticion de notas
-
-1. Usuario A crea una nota
-
-2. Usuario A la comparte con Usuario B
-
-3. Se guarda una relación en SharedNotes
-
-4. Usuario B puede verla (solo lectura)
-
-5. El sistema registra quién la compartió y cuándo
 
 ---
 
-## 📌 Contratos de Endpoints (Request/Response)
+## 🧩 Entidades del Dominio
 
-> Aquí se documenta el contrato de cada endpoint con ejemplos mock de request/response y códigos de estado.
+| Entidad | Descripción |
+| :--- | :--- |
+| **User** | Usuario autenticado del sistema. |
+| **Note** | Nota personal encriptada. |
+| **SharedNote** | Relación de compartición entre usuarios. |
+| **Permission** | Catálogo de permisos (READ, WRITE). |
+| **AuditLog** | Registro histórico de acciones. |
 
-###  GET /api/Notes
-**Descripción:** Lista tus notas (del usuario autenticado).  
-*Status 200 OK*
-```json
-[
-  { "id": 1, "title": "Nota 1", "content": "Contenido descifrado" },
-  { "id": 2, "title": "Nota 2", "content": "Otro contenido" }
-]
-```
-###  GET /api/Notes/{id}
-**Descripción:** Obtiene una nota por id si te pertenece.  
-*Status 200 OK*
-```json
-{ "id": 1, "title": "Nota 1", "content": "Contenido descifrado" }
-```
-**Status 404 NotFound** 
-```json
-{ "message": "Nota no encontrada" }
-```
-### POST /api/Notes
-**Descripción:** Crea una nota (se encripta en BD). 
-
-**Request:**
-```json
-{ "title": "Mi nota", "content": "Secreto" }
-```
-**Status 201 Created**
-```json
-{ "id": 1, "title": "Mi nota", "content": "Secreto" }
-```
-### PUT /api/Notes/{id}
-**Descripción:** Actualiza una nota tuya. 
-
-**Request:** 
-```json
-{ "title": "Mi nota", "content": "Secreto" }
-```
-*Status 204 NoContent*
-
-*Status 404 NotFound*
-```json
-{ "message": "Nota no encontrada" }
-```
-### DELETE /api/Notes/{id}
-**Descripción:** Elimina una nota tuya.
-
-*Status 204 NoContent*
-
-*Status 404 NotFound*
-
-```json
-{ "message": "Nota no encontrada" }
-```
-
-## POST /api/Notes/{noteId}/share/{userId}
-**Descripción:** Comparte una nota tuya con un usuario específico.
-
-*Status 200 OK*
-
-```json
-{
-  "message": "Nota compartida correctamente",
-  "noteId": 1,
-  "sharedWithUserId": 2
-}
-```
-
-## GET /api/Notes/shared/by-me
-**Descripción:** Lista las notas que yo he compartido.
-
-*Status 200 OK*
-
-```json
-[
-  {
-    "noteId": 1,
-    "title": "Nota 1",
-    "sharedWithUser": "pedro",
-    "sharedAt": "2026-02-01T12:00:00Z",
-    "canRead": true
-  }
-]
-```
-
-## GET /api/Notes/shared/with-me
-**Descripción:** Lista las notas que me compartieron a mi.
-
-*Status 200 OK*
-
-```json
-[
-  {
-    "noteId": 1,
-    "title": "Nota 1",
-    "sharedBy": "juan",
-    "sharedAt": "2026-02-01T12:00:00Z",
-    "canRead": true
-  }
-]
-``` 
-
-## Pruebas rápidas
-
-1. Health check (API viva)
-```bash
-curl http://localhost:5063/health
-```
-2. Login (Obtener el token)
-```bash
-curl -X POST http://localhost:5063/api/Auth/login \
-  -H "Content-Type: application/json" \
-  -d '{ "username": "admin", "password": "1234" }'
-``` 
-3. Crear nota (requiere token)
-```bash
-curl -X POST http://localhost:5063/api/Notes \
-  -H "Authorization: Bearer <TOKEN_AQUI>" \
-  -H "Content-Type: application/json" \
-  -d '{ "title": "Nota", "content": "Secreto" }'
-``` 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+---
 
 ## 📜 Reglas de negocio implementadas
 
-1. Un usuario no puede registrarse dos veces
-2. Solo el dueño puede compartir una nota
-3. No se puede compartir una nota inexistente
-4. Las notas compartidas son solo de lectura
-5. Solo usuarios autenticados acceden a datos
+1. Un usuario no puede registrarse dos veces con el mismo username
 
-## Arquitectura del Proyecto
+2. Solo el dueño de una nota puede compartirla
+
+3. No se puede compartir una nota inexistente
+
+4. Una nota compartida es solo de lectura
+
+5. Solo usuarios autenticados pueden acceder a los datos
+
+### 👉 Controladores
+
+Las rutas se definen mediante controladores en Controllers/ usando:
+
+```csharp
+- [ApiController]
+
+- [Route("api/[controller]")]
+
+- [HttpGet], [HttpPost], etc.
+```
+
+ Generando rutas como : 
+```csharp
+GET /api/Notes
+POST /api/Notes
+```
+
+## ⚙️ Configuración y Ejecución
+
+### Requisitos previos
+- .NET 9 SDK
+- Entity Framework Core Tools (`dotnet tool install --global dotnet-ef`)
+
+### Pasos para ejecutar:
+1. **Restaurar dependencias:**
+```bash
+dotnet restore
+```
+2. **Aplicar migraciones:**
+```bash
+dotnet ef database update
+```
+3. **Ejecutar la API:**
+```bash
+dotnet run
+```
+4. **Explorar la API:**
+Visita `http://localhost:5063/swagger`
+
+---
+
+## 📡 Endpoints Principales
+
+### Autenticación
+- `POST /api/Auth/register` - Crear cuenta nueva.
+- `POST /api/Auth/login` - Obtener JWT.
+
+### Notas y Compartición
+- `POST /api/Notes` - Crear nota (encriptada automáticamente).
+- `POST /api/Notes/{id}/share/{userId}` - Compartir nota con otro usuario.
+- `GET /api/Notes/shared/with-me` - Ver notas que otros compartieron conmigo.
+
+### 🧪 Pruebas rápidas (CURL)
+
+**Health Check:** 
+```bash
+curl http://localhost:5063/health
+```
+**Login**
+```bash
+curl -X POST http://localhost:5063/api/Auth/login \
+-H "Content-Type: application/json" \
+-d '{ "username": "admin", "password": "1234" }'
+```
+
+**Crear nota:**
+```bash
+curl -X POST http://localhost:5063/api/Notes \
+-H "Authorization: Bearer <TU_TOKEN>" \
+-H "Content-Type: application/json" \
+-d '{ "title": "Nota", "content": "Secreto" }'
+```
+
+---
+
+## 🏗️ Arquitectura del Proyecto
 
 ```mermaid
 graph TD
-    API["API_BACKEND1/"]
-    API --> Controllers["Controllers/"]
-    API --> Data["Data/"]
-    API --> Models["Models/"]
-    API --> Services["Services/"]
-    API --> DTOs["DTOs/"]
-    API --> DB["notes.db"]
-    API --> Program["Program.cs"]
-
-    Controllers --> Auth["AuthController.cs<br/>(JWT)"]
-    Controllers --> Notes["NotesController.cs<br/>(CRUD)"]
-
-    Data --> AppDb["AppDbContext.cs<br/>(EF Core)"]
-
-    Models --> User["User.cs"]
-    Models --> Note["Note.cs<br/>(Encriptado)"]
-    Models --> SharedNote["SharedNote.cs<br/>(Relación)"]
-
-    Services --> Aes["AesEncryptionService.cs<br/>(AES-256)"]
-
-    DTOs --> Requests["Requests/"]
-    DTOs --> Responses["Responses/"]
+    API[ASP.NET Core API] --> Controllers[Controllers]
+    Controllers --> Services[Services/Logic]
+    Services --> Data[Data / DbContext]
+    Data --> Models[Entities/Models]
+    Services --> DTOs[DTOs / Data Transfer]
+    Data --> SQLite[(SQLite Database)]
 ```
 
+---
 
-## ✅ Estado del proyecto
+## ✅ Estado del Proyecto
+- [x] Autenticación JWT completa.
+- [x] Capa de encriptación AES funcional.
+- [x] Sistema de permisos y compartición.
+- [x] Documentación Swagger configurada.
+- [ ] Pruebas unitarias (Posiblemente en desarrollo).
 
-✔ Autenticación
-
-✔ Encriptación
-
-✔ Compartición
-
-✔ Control de acceso
-
-✔ Documentación
-
-✔ Despliegue listo
-
-## 🎓 Conclusión
-
-Este proyecto demuestra una API backend profesional, segura y extensible, aplicando conceptos reales usados en la industria:
+---
+## 🎓 Conclusion
+Este proyecto demuestra una API backend segura, extensible y profesional, aplicando conceptos reales usados en la industria:
 
 - Seguridad
 
