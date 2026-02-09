@@ -12,8 +12,6 @@ Este DER describe el **modelo de datos** del proyecto **API BACKEND1** (notas en
 
 ---
 
-## 📌 DER (Mermaid)
-
 
 ```mermaid
 erDiagram

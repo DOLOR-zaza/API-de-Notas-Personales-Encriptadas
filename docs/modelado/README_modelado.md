@@ -1,4 +1,4 @@
-# README_modelado — Dominio y decisiones de modelado
+# Dominio y decisiones de modelado
 
 Este documento explica el **dominio**, las **entidades**, las **relaciones** y las **reglas** del sistema *API BACKEND1*.
 
