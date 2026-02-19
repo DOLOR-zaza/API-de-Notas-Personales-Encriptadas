@@ -23,7 +23,7 @@ async function apiFetch(path, { method = "GET", body = null, auth = true } = {})
     body: body ? JSON.stringify(body) : null,
   });
 
-  // intenta leer json si existe
+  // Lee JSON o texto según lo que venga
   let data = null;
   const text = await res.text();
   try { data = text ? JSON.parse(text) : null; } catch { data = text || null; }
@@ -44,12 +44,12 @@ async function login(email, password) {
   return apiFetch("/api/auth/login", { method: "POST", body: { email, password }, auth: false });
 }
 async function register(email, password, name) {
-  // ajusta campos según tu backend
+  // ajusta el payload según lo que el backend espere (ej: { name, email, password })
   const payload = name ? { email, password, name } : { email, password };
   return apiFetch("/api/auth/register", { method: "POST", body: payload, auth: false });
 }
 
-/* NOTES CRUD (ajusta rutas si difieren) */
+/* NOTES CRUD */
 async function getNotes() {
   return apiFetch("/api/notes");
 }

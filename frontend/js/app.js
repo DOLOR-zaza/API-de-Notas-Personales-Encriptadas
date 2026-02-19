@@ -1,8 +1,8 @@
-// Views
+// Vistas
 const authView = document.getElementById("authView");
 const appView = document.getElementById("appView");
 
-// Topbar
+// Top bar
 const logoutBtn = document.getElementById("logoutBtn");
 const userPill = document.getElementById("userPill");
 
@@ -17,7 +17,7 @@ const passwordEl = document.getElementById("password");
 const nameEl = document.getElementById("name");
 const togglePw = document.getElementById("togglePw");
 
-// Notes UI
+// Notas UI
 const notesList = document.getElementById("notesList");
 const notesMeta = document.getElementById("notesMeta");
 const searchInput = document.getElementById("searchInput");
@@ -171,11 +171,10 @@ async function loadNotes() {
     notesList.innerHTML = `<div class="muted tiny" style="padding:10px;">Cargando notas...</div>`;
     const data = await getNotes();
 
-    // Soporta: array directo o { data: [...] }
+    // Soporta array directo o { data: [...] }
     const arr = Array.isArray(data) ? data : (data?.data || []);
     notes = arr.map(x => ({
       ...x,
-      // normaliza si tu backend usa otros nombres
       title: x.title ?? x.titulo,
       content: x.content ?? x.contenido
     }));
@@ -214,7 +213,7 @@ async function onSave() {
       // POST
       const created = await createNote({ title, content });
       showToast("Nota creada ✅");
-      // si backend regresa el id, lo seleccionamos al recargar
+      // si el backend regresa el id, lo seleccionamos al recargar
       const createdId = created?.id || created?._id || created?.data?.id || created?.data?._id;
       await loadNotes();
       if (createdId) selectNote(createdId);
