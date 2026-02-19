@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secure Notes</title>
+  <link rel="stylesheet" href="./frontend/css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">🗒️</div>
+      <div>
+        <div class="brand-title">Secure Notes</div>
+        <div class="brand-sub">Minimal • Seguro • Rápido</div>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <div id="userPill" class="pill hidden"></div>
+      <button id="logoutBtn" class="btn btn-ghost hidden">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <!-- AUTH VIEW -->
+    <section id="authView" class="card auth">
+      <div class="auth-left">
+        <h1>Bienvenido 👋</h1>
+        <p class="muted">Inicia sesión para ver, crear y editar tus notas.</p>
+
+        <div class="segmented">
+          <button id="tabLogin" class="segmented-btn active" type="button">Login</button>
+          <button id="tabRegister" class="segmented-btn" type="button">Registro</button>
+        </div>
+
+        <form id="authForm" class="form">
+          <div class="field">
+            <label for="email">Correo</label>
+            <input id="email" type="email" placeholder="tu@correo.com" required />
+          </div>
+
+          <div class="field">
+            <label for="password">Contraseña</label>
+            <div class="input-row">
+              <input id="password" type="password" placeholder="••••••••" required minlength="6" />
+              <button type="button" id="togglePw" class="btn btn-ghost btn-sm">Ver</button>
+            </div>
+            <small class="hint">Mínimo 6 caracteres.</small>
+          </div>
+
+          <div id="registerExtra" class="field hidden">
+            <label for="name">Nombre (opcional)</label>
+            <input id="name" type="text" placeholder="Aaron" />
+          </div>
+
+          <button id="authSubmit" class="btn btn-primary" type="submit">Entrar</button>
+          <p class="muted tiny">¿No tienes cuenta? Cambia a “Registro”.</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- APP VIEW -->
+    <section id="appView" class="hidden">
+      <div class="layout">
+        <aside class="card pane">
+          <div class="pane-header">
+            <h2>Mis notas</h2>
+            <button id="newNoteBtn" class="btn btn-primary btn-sm" type="button">+ Nueva</button>
+          </div>
+
+          <div class="search">
+            <input id="searchInput" type="search" placeholder="Buscar por título o contenido..." />
+          </div>
+
+          <div id="notesMeta" class="muted tiny"></div>
+          <div id="notesList" class="list"></div>
+        </aside>
+
+        <section class="card pane editor">
+          <div class="pane-header">
+            <div>
+              <h2 id="editorTitle">Editor</h2>
+              <div id="editorSub" class="muted tiny">Crea o edita una nota.</div>
+            </div>
+            <div class="editor-actions">
+              <button id="clearBtn" class="btn btn-ghost btn-sm" type="button">Limpiar</button>
+              <button id="saveBtn" class="btn btn-primary btn-sm" type="button">Guardar</button>
+            </div>
+          </div>
+
+          <form id="noteForm" class="form" autocomplete="off">
+            <input type="hidden" id="noteId" />
+            <div class="field">
+              <label for="noteTitle">Título</label>
+              <input id="noteTitle" type="text" placeholder="Ej. Lista del súper" required maxlength="60" />
+            </div>
+
+            <div class="field">
+              <label for="noteContent">Contenido</label>
+              <textarea id="noteContent" rows="10" placeholder="Escribe tu nota aquí..." required></textarea>
+            </div>
+
+            <div class="divider"></div>
+            <div class="danger-row">
+              <button id="deleteBtn" type="button" class="btn btn-danger btn-sm hidden">Eliminar</button>
+              <div class="muted tiny" id="lastSaved"></div>
+            </div>
+          </form>
+        </section>
+      </div>
+    </section>
+
+    <!-- Modal confirm -->
+    <div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-card">
+        <h3 id="modalTitle">¿Eliminar nota?</h3>
+        <p class="muted">Esta acción no se puede deshacer.</p>
+        <div class="modal-actions">
+          <button id="modalCancel" class="btn btn-ghost" type="button">Cancelar</button>
+          <button id="modalConfirm" class="btn btn-danger" type="button">Eliminar</button>
+        </div>
+      </div>
+      <div class="modal-backdrop"></div>
+    </div>
+
+  </main>
+
+    <script src="./frontend/js/api.js"></script>
+    <script src="./frontend/js/app.js"></script>
+</body>
+</html>
